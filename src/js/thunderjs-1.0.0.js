@@ -935,7 +935,11 @@ if (typeof jQuery.ui === "undefined") {
 
             $grid.addClass(defaults.className).css(defaults.css);
 
-            $content.addClass(defaults.className + "-content").css(defaults.content.css);
+            if ($("." + defaults.className + "-content", $grid).length == 0) {
+                $content.addClass(defaults.className + "-content").css(defaults.content.css);
+            } else {
+                $content = $("." + defaults.className + "-content", $grid);
+            }
 
             if ($grid.data("url") === undefined) {
                 throw new Error("Data url attribute is empty in grid");
@@ -976,7 +980,9 @@ if (typeof jQuery.ui === "undefined") {
                     .val(defaults.pageSize).addClass(defaults.className + "-page-size"));
             }
             
-            $grid.append($content);
+            if ($("." + defaults.className + "-content", $grid).length == 0) {
+                $grid.append($content);
+            }
 
             $form.attr("action", $grid.data("url"))
                 .attr("method", defaults.httpMethod)
