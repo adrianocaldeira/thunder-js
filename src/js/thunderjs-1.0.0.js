@@ -1048,7 +1048,7 @@ if (typeof jQuery.ui === "undefined") {
     if($("[data-window=modal]").size() > 0) {
         if ($.thunder.utility().queryString("forceFocusOnLoadInModal")) {
             window.setTimeout(function() {
-                $("input:visible:not(input[type='hidden'],:disabled),select:visible:not(:disabled),textarea:visible:not(:disabled)").focus();
+                $("input:visible:not(input[type='hidden'],:disabled),select:visible:not(:disabled),textarea:visible:not(:disabled)").filter(":first").focus();
             }, 500);
         }
 
