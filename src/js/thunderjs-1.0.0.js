@@ -405,10 +405,6 @@ if (typeof jQuery.ui === "undefined") {
                     window.setTimeout(function () {
                         var $contents = $iframe.contents();
 
-                        $("button.close", $contents).on("click", function () {
-                            $this.dialog("close");
-                        });
-
                         if ($.isFunction(defaults.open)) {
                             defaults.open.call($contents);
                         }
@@ -418,7 +414,7 @@ if (typeof jQuery.ui === "undefined") {
             beforeClose: function () {
                 $this.empty();
                 if ($.isFunction(defaults.beforeClose)) {
-                    defaults.beforeClose.call($iframe.contents());
+                    defaults.beforeClose.call();
                 }
             },
             close: function () {
@@ -487,9 +483,14 @@ if (typeof jQuery.ui === "undefined") {
             },
             $.thunder.message.defaultOptions,
             options);
-
+        
         return $(selector).each(function () {
             var $this = $(this)
+                .removeClass("alert")
+                .removeClass("alert-success")
+                .removeClass("alert-info")
+                .removeClass("alert-warning")
+                .removeClass("alert-danger")
                 .addClass("alert")
                 .addClass("alert-" + defaults.type)
                 .empty()
@@ -1050,6 +1051,11 @@ if (typeof jQuery.ui === "undefined") {
                 $("input:visible:not(input[type='hidden'],:disabled),select:visible:not(:disabled),textarea:visible:not(:disabled)").focus();
             }, 500);
         }
+
+        $("button.close").on("click", function () {
+            window.parent.$.thunder.closeModal();
+        });
     }
     
 }(window.jQuery, window));
+
