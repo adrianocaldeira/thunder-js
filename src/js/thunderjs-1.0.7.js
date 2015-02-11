@@ -35,7 +35,7 @@ if (typeof jQuery.ui === "undefined") {
             querStringFormUrl: function (url, name) {
                 name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
                 var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"), results = regex.exec(url);
-                return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+                return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
             },
             statusCode: function (options) {
                 var defaults = $.extend(true, {}, {
@@ -49,7 +49,7 @@ if (typeof jQuery.ui === "undefined") {
                 var show = function (code) {
                     var message = $.thunder.statusCode[code];
 
-                    if (defaults.message.plugin == "message") {
+                    if (defaults.message.plugin === "message") {
                         if ($(defaults.message.selector).length > 0) {
                             $.thunder.message(defaults.message.selector, message,
                                 $.extend(true, { type: "danger" }, defaults.message)
@@ -185,7 +185,7 @@ if (typeof jQuery.ui === "undefined") {
         var $footer = $("<div class=\"modal-footer\"></div>");
         var $ok = $("<button type=\"button\"></button>");
 
-        if ($this.size() == 0) {
+        if ($this.size() === 0) {
             $this = $("<div></div>").addClass(defaults.className);
             $("body").append($this);
         }
@@ -199,7 +199,7 @@ if (typeof jQuery.ui === "undefined") {
             $this.addClass(defaults.className + "-" + defaults.type);
         }
         
-        if ($.trim(defaults.title) != "") {
+        if ($.trim(defaults.title) !== "") {
             $content.append($header.append($("<h4 class=\"modal-title\"></h4>").html(defaults.title)));
         }
 
@@ -260,12 +260,12 @@ if (typeof jQuery.ui === "undefined") {
         var $yes = $("<button type=\"button\"></button>");
         var $no = $("<button type=\"button\"></button>");
         
-        if ($this.size() == 0) {
+        if ($this.size() === 0) {
             $this = $("<div></div>").addClass(defaults.className);
             $("body").append($this);
         }
 
-        if($.trim(defaults.title) != "") {
+        if($.trim(defaults.title) !== "") {
             $content.append($header.append($("<h4 class=\"modal-title\"></h4>").html(defaults.title)));
         }
 
@@ -331,13 +331,13 @@ if (typeof jQuery.ui === "undefined") {
 
         var getUrl = function () {
             var delimiter = function () {
-                return (url.indexOf("?") == -1 ? "?" : "&");
+                return (url.indexOf("?") === -1 ? "?" : "&");
             };
 
             if (jQuery.isPlainObject(defaults.data) && !jQuery.isEmptyObject(defaults.data)) {
                 url += delimiter() + $.param(defaults.data);
             } else {
-                if (typeof defaults.data == "string") {
+                if (typeof defaults.data === "string") {
                     url += delimiter() + defaults.data;
                 }
             }
@@ -373,7 +373,7 @@ if (typeof jQuery.ui === "undefined") {
             .attr("src", getUrl())
             .hide();
 
-        if ($this.length == 0) {
+        if ($this.length === 0) {
             $this = $("<div></div>").addClass(defaults.className + "-iframe");
             $("body").append($this);
         }
@@ -565,16 +565,20 @@ if (typeof jQuery.ui === "undefined") {
             var $message = $(defaults.message.selector);
             var $loading = $(defaults.loading);
 
-            if ($this.attr("action") === "undefined" || $.trim($this.attr("action")) === "") {
+            if ($this.is("form") && ($this.attr("action") === "undefined" || $.trim($this.attr("action")) === "")) {
                 throw new Error("Action attribute is empty in form");
             }
 
-            if ($message.length == 0 && !$this.prev().is("." + defaults.className + "-message")) {
+            if (!$this.is("form") && ($this.data("action") === "undefined" || $.trim($this.data("action")) === "")) {
+                throw new Error("Action attribute is empty in element");
+            }
+
+            if ($message.length === 0 && !$this.prev().is("." + defaults.className + "-message")) {
                 $this.before($("<div></div>").addClass(defaults.className + "-message"));
                 $message = $this.prev();
             }
 
-            if ($loading.length == 0 && $("." + defaults.className + "-loading", $this).length == 0) {
+            if ($loading.length === 0 && $("." + defaults.className + "-loading", $this).length === 0) {
                 $loading = $("<div></div>").addClass(defaults.className + "-loading");
 
                 for (var i = 1; i <= 8; i++) {
@@ -588,7 +592,7 @@ if (typeof jQuery.ui === "undefined") {
 
                 $loading = $("." + defaults.className + "-loading", $this);
             }
-
+            
             var messages = function (m, o) {
                 var settings = $.extend({
                     type: 3
@@ -608,7 +612,7 @@ if (typeof jQuery.ui === "undefined") {
                     }
                 };
 
-                if (defaults.message.plugin == "message") {
+                if (defaults.message.plugin === "message") {
                     $.thunder.message($message, m,
                         $.extend(true,
                         {
@@ -648,8 +652,7 @@ if (typeof jQuery.ui === "undefined") {
 
                 return $.param(parameters);
             };
-
-            $this.on("submit", function (event) {
+            var submit = function(event) {
                 var $form = $this;
                 var extraData = {};
 
@@ -679,8 +682,8 @@ if (typeof jQuery.ui === "undefined") {
                 $.ajax({
                     statusCode: statusCode,
                     async: defaults.async,
-                    url: $form.attr("action"),
-                    type: $form.attr("method"),
+                    url: ($form.is("form") ? $form.attr("action") : $form.data("action")),
+                    type: ($form.is("form") ? $form.attr("method") : ($form.data("method") || "post")),
                     data: dataSerialize,
                     headers: {
                         "Url-Parent": window.location.pathname
@@ -698,7 +701,7 @@ if (typeof jQuery.ui === "undefined") {
                         }
                     },
                     success: function (result) {
-                        window.setTimeout(function() {
+                        window.setTimeout(function () {
                             if (defaults.autoResolveResult) {
                                 if ($.isPlainObject(result) && !$.isEmptyObject(result) && result.type !== "undefined") {
                                     if (result.type === 0) {
@@ -707,11 +710,11 @@ if (typeof jQuery.ui === "undefined") {
                                         }
                                     } else {
                                         var $firstField = null;
-                                        $.each(result.messages, function() {
+                                        $.each(result.messages, function () {
                                             if (this.key !== undefined) {
                                                 var $field = $("[name='" + this.key + "'],#" + this.key, $form);
 
-                                                if ($firstField == null) {
+                                                if ($firstField === null) {
                                                     $firstField = $field;
                                                 }
 
@@ -729,7 +732,17 @@ if (typeof jQuery.ui === "undefined") {
                         }, 0);
                     }
                 });
-            });
+            };
+
+            if ($this.is("form")) {
+                $this.on("submit", function (event) {
+                    submit(event);
+                });
+            } else {
+                $(defaults.submitButton).on("click", function (event) {
+                    submit(event);
+                });
+            }
 
             return $this;
         });
@@ -739,6 +752,7 @@ if (typeof jQuery.ui === "undefined") {
         className: "thunder-ajax-form",
         ignore: "",
         loading: null,
+        submitButton: "button.submit-button, a.submit-button",
         statusCode: {
             message: {
                 plugin: "message", //message, alert
@@ -786,7 +800,7 @@ if (typeof jQuery.ui === "undefined") {
                 }
             };
 
-            if (defaults.message.plugin == "message") {
+            if (defaults.message.plugin === "message") {
                 $.thunder.message(this, m,
                     $.extend(true,
                     {
@@ -904,7 +918,7 @@ if (typeof jQuery.ui === "undefined") {
                                     if (this.key !== undefined) {
                                         var $field = $("[name='" + this.key + "'],#" + this.key, $form);
 
-                                        if ($firstField == null) {
+                                        if ($firstField === null) {
                                             $firstField = $field;
                                         }
 
@@ -936,7 +950,7 @@ if (typeof jQuery.ui === "undefined") {
 
             $grid.addClass(defaults.className).css(defaults.css);
 
-            if ($("." + defaults.className + "-content", $grid).length == 0) {
+            if ($("." + defaults.className + "-content", $grid).length === 0) {
                 $content.addClass(defaults.className + "-content").css(defaults.content.css);
             } else {
                 $content = $("." + defaults.className + "-content", $grid);
@@ -946,17 +960,17 @@ if (typeof jQuery.ui === "undefined") {
                 throw new Error("Data url attribute is empty in grid");
             }
 
-            if ($message.length == 0 && !$grid.prev().is("." + defaults.className + "-message")) {
+            if ($message.length === 0 && !$grid.prev().is("." + defaults.className + "-message")) {
                 $grid.before($("<div></div>").addClass(defaults.className + "-message"));
                 $message = $grid.prev();
             }
 
-            if ($form.length == 0 && $("." + defaults.className + "-form", $grid).length == 0) {
+            if ($form.length === 0 && $("." + defaults.className + "-form", $grid).length === 0) {
                 $grid.prepend($("<form></form>").addClass(defaults.className + "-form"));
                 $form = $("." + defaults.className + "-form", $grid);
             }
 
-            if ($loading.length == 0 && $("." + defaults.className + "-loading", $grid).length == 0) {
+            if ($loading.length === 0 && $("." + defaults.className + "-loading", $grid).length === 0) {
                 $loading = $("<div></div>").addClass(defaults.className + "-loading");
 
                 for (var i = 1; i <= 8; i++) {
@@ -971,17 +985,17 @@ if (typeof jQuery.ui === "undefined") {
                 $loading = $("." + defaults.className + "-loading", $grid);
             }
 
-            if ($("." + defaults.className + "-current-page", $form).length == 0) {
+            if ($("." + defaults.className + "-current-page", $form).length === 0) {
                 $form.prepend($("<input/>").attr("type", "hidden").attr("name", makeFieldName("CurrentPage"))
                     .val(defaults.currentPage).addClass(defaults.className + "-current-page"));
             }
 
-            if ($("." + defaults.className + "-page-size", $form).length == 0) {
+            if ($("." + defaults.className + "-page-size", $form).length === 0) {
                 $form.prepend($("<input/>").attr("type", "hidden").attr("name", makeFieldName("PageSize"))
                     .val(defaults.pageSize).addClass(defaults.className + "-page-size"));
             }
             
-            if ($("." + defaults.className + "-content", $grid).length == 0) {
+            if ($("." + defaults.className + "-content", $grid).length === 0) {
                 $grid.append($content);
             }
 
@@ -1058,4 +1072,3 @@ if (typeof jQuery.ui === "undefined") {
     }
     
 }(window.jQuery, window));
-
