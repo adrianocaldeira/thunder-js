@@ -628,14 +628,18 @@ if (typeof jQuery.ui === "undefined") {
                     $.thunder.alert(m, { type: getMessageType() });
                 }
             };
-            var serialize = function (form, extraData) {
-                var $form = $(form);
-                var fields = $("input,select,textarea", $form);
+            var getFields = function() {
+                var fields = $("input,select,textarea", $this);
 
                 if (defaults.ignore !== "undefined" && defaults.ignore !== "") {
-                    fields = $("input,select,textarea", $form).filter(defaults.ignore);
+                    fields = $("input,select,textarea", $this).filter(defaults.ignore);
                 }
 
+                return fields;
+            };
+            var serialize = function (form, extraData) {
+                var $form = $(form);
+                var fields = getFields();
                 var parameters = fields.serializeArray();
 
                 if ($.isArray(extraData)) {
@@ -735,12 +739,23 @@ if (typeof jQuery.ui === "undefined") {
             };
 
             if ($this.is("form")) {
-                $this.on("submit", function (event) {
-                    submit(event);
+                $this.on("submit", function (e) {
+                    submit(e);
                 });
             } else {
-                $(defaults.submitButton).on("click", function (event) {
-                    submit(event);
+                var $submitButton = $(defaults.submitButton);
+                
+                $.each(getFields(), function () {
+                    $(this).on("keypress", function(e) {
+                        if (e.which === 13) {
+                            e.preventDefault();
+                            $submitButton.trigger("click");
+                        }
+                    });
+                });
+
+                $submitButton.on("click", function (e) {
+                    submit(e);
                 });
             }
 
