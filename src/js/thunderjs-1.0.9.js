@@ -11,6 +11,8 @@ if (typeof jQuery.ui === "undefined") {
         $.thunder = {};
     };
 
+    $.thunder.version = "1.0.9";
+
     $.thunder.statusCode = {
         400: "Bad request",
         401: "Unauthorized",
@@ -659,6 +661,7 @@ if (typeof jQuery.ui === "undefined") {
             var submit = function(event) {
                 var $form = $this;
                 var extraData = {};
+                var $fields = getFields();
 
                 event.preventDefault();
 
@@ -695,7 +698,7 @@ if (typeof jQuery.ui === "undefined") {
                     beforeSend: function () {
                         $loading.show();
                         $.thunder.disableElement($("input,select,textarea,button", $form));
-                        $("input,select,textarea", $form).removeClass(defaults.className + "-error");
+                        $fields.removeClass(defaults.className + "-error");
                     },
                     complete: function () {
                         $.thunder.enableElement($("input,select,textarea,button", $form));
@@ -737,6 +740,7 @@ if (typeof jQuery.ui === "undefined") {
                     }
                 });
             };
+            var $fields = getFields();
 
             if ($this.is("form")) {
                 $this.on("submit", function (e) {
@@ -745,7 +749,7 @@ if (typeof jQuery.ui === "undefined") {
             } else {
                 var $submitButton = $(defaults.submitButton);
                 
-                $.each(getFields(), function () {
+                $fields.each(function () {
                     $(this).on("keypress", function(e) {
                         if (e.which === 13) {
                             e.preventDefault();
@@ -758,6 +762,14 @@ if (typeof jQuery.ui === "undefined") {
                     submit(e);
                 });
             }
+
+            $fields.each(function () {
+                $(this).on("blur", function () {
+                    if (($(this).is("select") && $(this).val() !== "0") || (!$(this).is("select") && $(this).val() !== "")) {
+                        $(this).removeClass(defaults.className + "-error");
+                    }
+                });
+            });
 
             return $this;
         });
