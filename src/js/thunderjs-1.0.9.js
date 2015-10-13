@@ -735,7 +735,11 @@ if (typeof jQuery.ui === "undefined") {
                                                     $firstField = $field;
                                                 }
 
-                                                $field.addClass(defaults.className + "-error");
+                                                if ($field.closest(".form-group").size() > 0) {
+                                                    $field.closest(".form-group").addClass("has-error");
+                                                } else {
+                                                    $field.addClass(defaults.className + "-error");
+                                                }
                                             }
                                         });
                                         messages(result.messages, { type: result.type });
