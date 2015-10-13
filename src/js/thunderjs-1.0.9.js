@@ -561,6 +561,7 @@ if (typeof jQuery.ui === "undefined") {
             async: true,
             autoResolveResult: true,
             before: function () { },
+            beforeSend: function () { },
             success: function () { },
             complete: function () { },
             validate: function () { return true; }
@@ -703,6 +704,10 @@ if (typeof jQuery.ui === "undefined") {
                         $loading.show();
                         $.thunder.disableElement($("input,select,textarea,button", $form));
                         $fields.removeClass(defaults.className + "-error");
+
+                        if ($.isFunction(defaults.beforeSend)) {
+                            defaults.beforeSend.call($form);
+                        }
                     },
                     complete: function () {
                         $.thunder.enableElement($("input,select,textarea,button", $form));
