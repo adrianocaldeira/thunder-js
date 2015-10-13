@@ -563,6 +563,7 @@ if (typeof jQuery.ui === "undefined") {
             before: function () { },
             beforeSend: function () { },
             success: function () { },
+            result: function () { },
             complete: function () { },
             validate: function () { return true; }
         }, $.thunder.ajaxForm.defaultOptions, options);
@@ -744,6 +745,10 @@ if (typeof jQuery.ui === "undefined") {
                                 }
                             } else {
                                 defaults.success.call($form, result);
+                            }
+
+                            if ($.isFunction(defaults.result)) {
+                                defaults.result.call($form, result);
                             }
                         }, 0);
                     }
