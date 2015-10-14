@@ -230,7 +230,7 @@ if (typeof jQuery.ui === "undefined") {
             $ok.focus();
         });
 
-        $this.modal("show", {
+        $this.modal({
             keyboard: false
         });
     };
@@ -301,7 +301,7 @@ if (typeof jQuery.ui === "undefined") {
             .addClass(defaults.effect)
             .append($dialog);
 
-        $this.modal("show", {
+        $this.modal({
             keyboard: false
         });
     };
@@ -645,8 +645,7 @@ if (typeof jQuery.ui === "undefined") {
 
                 return fields;
             };
-            var serialize = function (form, extraData) {
-                var $form = $(form);
+            var serialize = function (extraData) {
                 var fields = getFields();
                 var parameters = fields.serializeArray();
 
@@ -678,7 +677,7 @@ if (typeof jQuery.ui === "undefined") {
                     extraData = defaults.before.call($form);
                 }
 
-                var dataSerialize = serialize($form, extraData);
+                var dataSerialize = serialize(extraData);
 
                 if ($.isFunction(defaults.validate) && !defaults.validate.call($form, dataSerialize)) {
                     return;
@@ -705,9 +704,10 @@ if (typeof jQuery.ui === "undefined") {
                         $loading.show();
                         $.thunder.disableElement($("input,select,textarea,button", $form));
                         $fields.removeClass(defaults.className + "-error");
+                        $fields.closest(".form-group").removeClass("has-error");
 
                         if ($.isFunction(defaults.beforeSend)) {
-                            defaults.beforeSend.call($form);
+                            defaults.beforeSend.call($form, $fields);
                         }
                     },
                     complete: function () {
@@ -742,6 +742,9 @@ if (typeof jQuery.ui === "undefined") {
                                                 }
                                             }
                                         });
+                                        if ($firstField) {
+                                            $firstField.focus();
+                                        }
                                         messages(result.messages, { type: result.type });
                                     }
                                 } else {
