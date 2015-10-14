@@ -726,14 +726,9 @@ if (typeof jQuery.ui === "undefined") {
                                             defaults.success.call($form, result);
                                         }
                                     } else {
-                                        var $firstField = null;
                                         $.each(result.messages, function () {
                                             if (this.key !== undefined) {
                                                 var $field = $("[name='" + this.key + "'],#" + this.key, $form);
-
-                                                if ($firstField === null) {
-                                                    $firstField = $field;
-                                                }
 
                                                 if ($field.closest(".form-group").size() > 0) {
                                                     $field.closest(".form-group").addClass("has-error");
@@ -742,9 +737,7 @@ if (typeof jQuery.ui === "undefined") {
                                                 }
                                             }
                                         });
-                                        if ($firstField) {
-                                            $firstField.focus();
-                                        }
+              
                                         messages(result.messages, { type: result.type });
                                     }
                                 } else {
