@@ -11,7 +11,7 @@ if (typeof jQuery.ui === "undefined") {
         $.thunder = {};
     };
 
-    $.thunder.version = "1.1.1";
+    $.thunder.version = "1.1.2";
 
     $.thunder.statusCode = {
         400: "Bad request",
@@ -1042,11 +1042,13 @@ if (typeof jQuery.ui === "undefined") {
 
             $form.attr("action", $grid.data("url"))
                 .attr("method", defaults.httpMethod)
-                .on("submit", function(event) {
+                .on((defaults.useForm ? "submit" : "send"), function (event) {
                     event.preventDefault();
                     setCurrentPage.call(this, 0);
                     load.call($grid);
                 });
+
+            console.log($form);
 
             $grid.data("loading", $loading)
                 .data("message", $message)
@@ -1054,19 +1056,19 @@ if (typeof jQuery.ui === "undefined") {
                 .data("form", $form);
 
             $grid.bind("reload", function () {
-                $form.trigger("submit");
+                $form.trigger((defaults.useForm ? "submit" : "send"));
             });
 
-            if (!$form.is("form")) {
+            if (!defaults.useForm) {
                 $("input:text", $form).on("keypress", function(e) {
                     if (e.which === 13) {
-                        $form.trigger("submit");
+                        $form.trigger("send");
                     }
                 });
 
                 $(defaults.buttonSubmit, $form).on("click", function (e) {
                     e.preventDefault();
-                    $form.trigger("submit");
+                    $form.trigger("send");
                 });
             }
 
