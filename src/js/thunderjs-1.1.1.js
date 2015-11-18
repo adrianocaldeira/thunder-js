@@ -11,7 +11,7 @@ if (typeof jQuery.ui === "undefined") {
         $.thunder = {};
     };
 
-    $.thunder.version = "1.1.0";
+    $.thunder.version = "1.1.1";
 
     $.thunder.statusCode = {
         400: "Bad request",
@@ -821,7 +821,7 @@ if (typeof jQuery.ui === "undefined") {
             complete: function () { },
             validate: function () { return true; }
         }, $.thunder.grid.defaultOptions, options);
-
+        
         var messages = function (m, o) {
             var settings = $.extend({
                 type: 3
@@ -864,7 +864,7 @@ if (typeof jQuery.ui === "undefined") {
             if (defaults.ignore !== "undefined" && defaults.ignore !== "") {
                 fields = $("input,select,textarea", $form).filter(defaults.ignore);
             }
-
+            
             var parameters = fields.serializeArray();
 
             if ($.isArray(extraData)) {
@@ -988,7 +988,7 @@ if (typeof jQuery.ui === "undefined") {
             var $loading = $(defaults.loading);
             var $form = $(defaults.form);
             var $content = $("<div></div>");
-
+            
             $grid.addClass(defaults.className).css(defaults.css);
 
             if ($("." + defaults.className + "-content", $grid).length === 0) {
@@ -1007,7 +1007,7 @@ if (typeof jQuery.ui === "undefined") {
             }
 
             if ($form.length === 0 && $("." + defaults.className + "-form", $grid).length === 0) {
-                $grid.prepend($("<form></form>").addClass(defaults.className + "-form"));
+                $grid.prepend($(defaults.useForm ? "<form></form>" : "<div></div>").addClass(defaults.className + "-form"));
                 $form = $("." + defaults.className + "-form", $grid);
             }
 
@@ -1048,14 +1048,27 @@ if (typeof jQuery.ui === "undefined") {
                     load.call($grid);
                 });
 
-            $grid.bind("reload", function() {
-                $form.submit();
-            });
-
             $grid.data("loading", $loading)
                 .data("message", $message)
                 .data("content", $content)
                 .data("form", $form);
+
+            $grid.bind("reload", function () {
+                $form.trigger("submit");
+            });
+
+            if (!$form.is("form")) {
+                $("input:text", $form).on("keypress", function(e) {
+                    if (e.which === 13) {
+                        $form.trigger("submit");
+                    }
+                });
+
+                $(defaults.buttonSubmit, $form).on("click", function (e) {
+                    e.preventDefault();
+                    $form.trigger("submit");
+                });
+            }
 
             $grid.on("click", "ul.pagination a", function(event) {
                 var $link = $(this);
@@ -1081,6 +1094,8 @@ if (typeof jQuery.ui === "undefined") {
         ignore: "",
         loading: null,
         httpMethod: "POST",
+        useForm: true,
+        buttonSubmit: null,
         statusCode: {
             message: {
                 plugin: "message", //message, alert
