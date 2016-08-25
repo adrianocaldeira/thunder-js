@@ -11,7 +11,7 @@ if (typeof jQuery.ui === "undefined") {
         $.thunder = {};
     };
 
-    $.thunder.version = "1.1.3";
+    $.thunder.version = "1.1.4";
 
     $.thunder.statusCode = {
         400: "Bad request",
@@ -237,7 +237,8 @@ if (typeof jQuery.ui === "undefined") {
         });
 
         $this.modal({
-            keyboard: false
+            keyboard: false,
+			backdrop: "static"
         });
     };
 
@@ -308,7 +309,8 @@ if (typeof jQuery.ui === "undefined") {
             .append($dialog);
 
         $this.modal({
-            keyboard: false
+            keyboard: false,
+			backdrop: "static"
         });
     };
 
