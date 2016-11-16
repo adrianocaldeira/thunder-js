@@ -11,7 +11,7 @@ if (typeof jQuery.ui === "undefined") {
         $.thunder = {};
     };
 
-    $.thunder.version = "1.1.5";
+    $.thunder.version = "1.1.6";
 
     $.thunder.statusCode = {
         400: "Bad request",
@@ -453,7 +453,7 @@ if (typeof jQuery.ui === "undefined") {
                     $formToIframe.submit().remove();
                 }
 
-                $iframe.load(function () {
+                $iframe.on("load", function () {
                     $iframe.show();
                     $loading.remove();
 
